@@ -1,4 +1,4 @@
-name: SonarCloud Scan
+name: SonarCloud
 
 on:
   push:
@@ -11,32 +11,32 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.16-8/x64
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: 17
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
 
-    - name: Make Build Wrapper executable
-      run: chmod +x tools/build-wrapper/build-wrapper-linux-x86-64
+      - name: Make Build Wrapper executable
+        run: chmod +x tools/build-wrapper/build-wrapper-linux-x86-64
 
-    - name: Build project with Build Wrapper
-      run: |
-        tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build .
-      # sostituisci 'cmake --build .' con il comando reale per compilare il tuo progetto, se differente
-
-    - name: Run SonarCloud Analysis
-      uses: SonarSource/sonarcloud-github-action@v2
-      with:
-        args: >
-          -Dsonar.projectKey=antonioborrelli11-coder_codice_18
-          -Dsonar.organization=antonioborrelli11-coder
-          -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
-        projectBaseDir: .
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Build project with Build Wrapper
+        run: |
+          tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build .
+      
+      - name: Run SonarCloud analysis
+        uses: SonarSource/sonarcloud-github-action@v2
+        with:
+          args: >
+            -Dsonar.projectKey=antonioborrelli11-coder_codice_18
+            -Dsonar.organization=antonioborrelli11-coder
+            -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
+          projectBaseDir: .
