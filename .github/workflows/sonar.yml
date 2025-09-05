@@ -1,4 +1,4 @@
-name: SonarCloud C/C++ Analysis
+name: SonarCloud C/C++ Analysis with Coverage
 
 on:
   push:
@@ -27,15 +27,29 @@ jobs:
     - name: Build with Build Wrapper
       run: |
         mkdir -p build_wrapper_output
-        ./build-wrapper/build-wrapper-linux-x86/build-wrapper-linux-x86 --out-dir build_wrapper_output make build
+        ./build-wrapper/build-wrapper-linux-x86/build-wrapper-linux-x86 --out-dir build_wrapper_output make clean all
+
+    - name: Run tests and generate coverage
+      run: |
+        # Assumendo che i test siano eseguibili con make test
+        mkdir -p coverage
+        make test
+        # Genera file .gcov per ogni file sorgente
+        gcov -o . *.c
+        # Genera report lcov
+        lcov --capture --directory . --output-file coverage/coverage.info
+        # Rimuove file non necessari
+        lcov --remove coverage/coverage.info '/usr/*' --output-file coverage/coverage.info
+        # Genera report HTML (opzionale)
+        genhtml coverage/coverage.info --output-directory coverage/html
 
     - name: Run SonarCloud analysis
-      uses: SonarSource/sonarqube-scan-action@v4
+      uses: SonarSource/sonarcloud-github-action@v2
       with:
         args: >
           -Dsonar.projectKey=antonioborrelli11-coder_codice_18
           -Dsonar.organization=antonioborrelli11-coder
-          -Dsonar.sources=.
           -Dsonar.cfamily.build-wrapper-output=build_wrapper_output
+          -Dsonar.cfamily.gcov.reportsPath=coverage
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
