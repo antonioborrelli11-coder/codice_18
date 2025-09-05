@@ -1,31 +1,34 @@
-name: SonarCloud C/C++ Analysis
+name: SonarCloud
 
 on:
   push:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
-  sonarcloud:
-    name: SonarCloud Scan
+  build:
+    name: Build and analyze
     runs-on: ubuntu-latest
+
     steps:
-      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up CMake
       - name: Set up CMake
-        uses: lukka/get-cmake@v4
+        uses: jwlawson/actions-setup-cmake@v1
+        with:
+          cmake-version: '3.27.3'  # scegli la versione corretta per il tuo progetto
 
-      # Step 3: Build project with Build Wrapper
-      - name: Build with Build Wrapper
+      - name: Create build directory
+        run: mkdir -p build
+
+      - name: Build project with Build Wrapper
         run: |
           mkdir -p bw-output
-          tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build .
+          tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build
 
-      # Step 4: Run SonarCloud analysis
       - name: Run SonarCloud analysis
         uses: SonarSource/sonarcloud-github-action@v2
         with:
