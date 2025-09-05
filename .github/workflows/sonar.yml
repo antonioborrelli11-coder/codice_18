@@ -1,4 +1,4 @@
-name: SonarCloud Analysis
+name: SonarCloud C/C++ Analysis
 
 on:
   push:
@@ -13,16 +13,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
-    - name: Build project with Build Wrapper
+    - name: Install build-wrapper
+      run: |
+        wget https://binaries.sonarsource.com/BuildWrapper/build-wrapper-linux-x86.zip
+        unzip build-wrapper-linux-x86.zip -d build-wrapper
+        chmod +x build-wrapper/build-wrapper-linux-x86/build-wrapper-linux-x86
+
+    - name: Build with Build Wrapper
       run: |
         mkdir -p build_wrapper_output
-        # il build-wrapper integrato si occuperà della compilazione
-        build-wrapper-linux-x86-64 --out-dir build_wrapper_output make build
+        ./build-wrapper/build-wrapper-linux-x86/build-wrapper-linux-x86 --out-dir build_wrapper_output make build
 
     - name: Run SonarCloud analysis
       uses: SonarSource/sonarqube-scan-action@v4
