@@ -18892,3 +18892,7 @@ int test_func_446(int a, int b) {
  (void)buf; /* evita warning */
  return 0;
 }
+int main(void) {
+    // TODO: richiamare qui le funzioni di test, per ora ritorna 0
+    return 0;
+}
