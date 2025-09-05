@@ -1,37 +1,31 @@
-name: SonarCloud
+name: SonarCloud C/C++ Analysis
 
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   sonarcloud:
-    name: SonarCloud
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.16-8/x64
-
     steps:
+      # Step 1: Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
+      # Step 2: Set up CMake
+      - name: Set up CMake
+        uses: lukka/get-cmake@v4
 
-      - name: Make Build Wrapper executable
-        run: chmod +x tools/build-wrapper/build-wrapper-linux-x86-64
-
-      - name: Build project with Build Wrapper
+      # Step 3: Build project with Build Wrapper
+      - name: Build with Build Wrapper
         run: |
+          mkdir -p bw-output
           tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build .
-      
+
+      # Step 4: Run SonarCloud analysis
       - name: Run SonarCloud analysis
         uses: SonarSource/sonarcloud-github-action@v2
         with:
@@ -40,3 +34,5 @@ jobs:
             -Dsonar.organization=antonioborrelli11-coder
             -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
           projectBaseDir: .
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
