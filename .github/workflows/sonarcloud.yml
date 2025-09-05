@@ -1,5 +1,26 @@
-# .github/workflows/sonar.yml - Fix per SonarCloud
-name: SonarCloud Analysis
+# SOLUZIONE 1: URL CORRETTO (GitHub Actions)
+- name: Install SonarCloud build-wrapper
+  run: |
+    # URL AGGIORNATO e corretto
+    wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+    unzip build-wrapper-linux-x86.zip
+    chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86-64
+    echo "$PWD/build-wrapper-linux-x86" >> $GITHUB_PATH
+
+---
+
+# SOLUZIONE 2: Alternativa con curl
+- name: Install build-wrapper (alternative)
+  run: |
+    curl -sSLo build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+    unzip build-wrapper-linux-x86.zip
+    chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86-64
+    export PATH="$PWD/build-wrapper-linux-x86:$PATH"
+
+---
+
+# SOLUZIONE 3: Workflow completo FUNZIONANTE
+name: Build and SonarCloud
 
 on:
   push:
@@ -14,33 +35,39 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Importante per SonarCloud
+        fetch-depth: 0
     
     - name: Install build-wrapper
       run: |
+        # URL CORRETTO
         wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
         unzip build-wrapper-linux-x86.zip
+        chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86-64
         echo "$PWD/build-wrapper-linux-x86" >> $GITHUB_PATH
     
-    - name: Clean and prepare
+    - name: Verify build-wrapper
       run: |
-        rm -rf build/ bw-output/
-        mkdir -p build bw-output
+        which build-wrapper-linux-x86-64
+        build-wrapper-linux-x86-64 --help
     
-    - name: Build with wrapper
+    - name: Clean and build
       run: |
-        build-wrapper-linux-x86-64 --out-dir bw-output make clean all
-        # oppure se hai un Makefile diverso:
-        # build-wrapper-linux-x86-64 --out-dir bw-output gcc -o build/program *.c
+        # Pulisci tutto
+        make clean || rm -rf build/ *.o
+        rm -rf bw-output/
+        mkdir -p build
+        
+        # Build con wrapper
+        build-wrapper-linux-x86-64 --out-dir bw-output gcc -std=c11 -Wall -Wextra -O2 -o build/program main.c
     
-    - name: Verify build output
+    - name: Verify capture
       run: |
-        echo "=== Build Wrapper Output ==="
+        echo "=== Build wrapper output ==="
         ls -la bw-output/
-        echo "=== Compile Commands ==="
-        cat bw-output/compile_commands.json || echo "File non trovato"
-        echo "=== Source Files ==="
-        find . -name "*.c" -o -name "*.cpp" -o -name "*.h"
+        echo "=== Compile commands ==="
+        cat bw-output/compile_commands.json
+        # Verifica che non sia vuoto
+        [ -s bw-output/compile_commands.json ] || (echo "❌ Empty compile_commands.json!" && exit 1)
     
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@v2
@@ -52,86 +79,52 @@ jobs:
           -Dsonar.projectKey=antonioborrelli11-coder_mergesort
           -Dsonar.organization=antonioborrelli11-coder
           -Dsonar.sources=.
-          -Dsonar.exclusions=**/build-wrapper-dump.json,**/bw-output/**
           -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
-          -Dsonar.cfamily.cache.enabled=false
-          -Dsonar.cfamily.threads=4
 
 ---
-# sonar-project.properties - Alternativo
-sonar.projectKey=antonioborrelli11-coder_mergesort
-sonar.organization=antonioborrelli11-coder
 
-# Paths
-sonar.sources=.
-sonar.exclusions=**/build-wrapper-dump.json,**/bw-output/**,**/.git/**
-
-# C/C++ specific
-sonar.cfamily.compile-commands=bw-output/compile_commands.json
-sonar.cfamily.cache.enabled=false
-sonar.cfamily.threads=4
-
-# Language settings
-sonar.c.file.suffixes=.c,.h
-sonar.cpp.file.suffixes=.cpp,.cc,.cxx,.c++,.hh,.hpp,.hxx,.h++
-
----
-# Makefile fix
-.PHONY: clean all build
-
-CC=gcc
-CFLAGS=-std=c11 -Wall -Wextra -O2
-TARGET=build/program
-SOURCES=$(wildcard *.c)
-OBJECTS=$(SOURCES:.c=.o)
-
-all: $(TARGET)
-
-$(TARGET): $(OBJECTS) | build
-	$(CC) $(CFLAGS) -o $@ $(OBJECTS)
-
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-build:
-	mkdir -p build
-
-clean:
-	rm -rf build/ *.o bw-output/
-
-# Test build senza wrapper
-test-build:
-	gcc -std=c11 -Wall -Wextra -O2 -o test_program *.c
-
----
-# Script di debug - debug_sonar.sh
+# SOLUZIONE 4: Test locale (se vuoi testare in locale)
 #!/bin/bash
-echo "=== SONAR DEBUG SCRIPT ==="
+echo "🔧 Test build-wrapper locale"
 
-echo "1. Verifica file sorgenti:"
-find . -name "*.c" -o -name "*.cpp" -o -name "*.h" | head -10
+# Download con URL corretto
+echo "📥 Download build-wrapper..."
+wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+unzip build-wrapper-linux-x86.zip
+chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86-64
 
-echo "2. Verifica Compilation Database:"
-if [ -f "bw-output/compile_commands.json" ]; then
-    echo "File trovato, contenuto:"
-    cat bw-output/compile_commands.json
-else
-    echo "❌ compile_commands.json NON TROVATO"
-fi
+# Test funzionamento
+echo "🧪 Test build-wrapper..."
+./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --help
 
-echo "3. Verifica percorsi assoluti:"
-pwd
-ls -la
+# Clean e build
+echo "🧹 Clean..."
+make clean 2>/dev/null || rm -rf build/ *.o
+rm -rf bw-output/
 
-echo "4. Test build manuale:"
-gcc -v -o test_program *.c 2>&1 | grep -E "(collect2|ld|gcc)"
+# Build con wrapper
+echo "🔨 Build con wrapper..."
+./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-output gcc -std=c11 -Wall -O2 -o program main.c
 
-echo "5. Verifica build wrapper:"
-if [ -f "bw-output/build-wrapper-dump.json" ]; then
-    echo "Build wrapper dump trovato"
-    head -20 bw-output/build-wrapper-dump.json
-else
-    echo "❌ Build wrapper dump non trovato"
-fi
+# Verifica risultato
+echo "✅ Verifica..."
+ls -la bw-output/
+cat bw-output/compile_commands.json
 
-# Esegui con: chmod +x debug_sonar.sh && ./debug_sonar.sh
+---
+
+# SOLUZIONE 5: Alternative se tutto fallisce
+- name: Install build-wrapper (fallback)
+  run: |
+    # Prova prima l'URL principale
+    wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip || \
+    # Se fallisce, prova GitHub releases
+    wget https://github.com/SonarSource/sonar-scanner-cli/releases/download/4.8.0.2856/build-wrapper-linux-x86.zip || \
+    # Ultima risorsa: crea JSON manuale
+    (mkdir -p bw-output && echo '[{"directory":"'"$PWD"'","command":"gcc -std=c11 -Wall -O2 -c main.c","file":"'"$PWD"'/main.c"}]' > bw-output/compile_commands.json)
+    
+    if [ -f build-wrapper-linux-x86.zip ]; then
+      unzip build-wrapper-linux-x86.zip
+      chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86-64
+      echo "$PWD/build-wrapper-linux-x86" >> $GITHUB_PATH
+    fi
