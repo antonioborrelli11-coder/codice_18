@@ -1,6 +1,6 @@
 build:
 	mkdir -p build
-	gcc -std=c11 -Wall -Wextra -O2 -o build/program src/main.c
+	gcc -std=c11 -Wall -Wextra -O2 -o build/program main.c
 
-test: build
-	./build/program
+clean:
+	rm -rf build
