@@ -18889,4 +18889,4 @@ int test_func_446(int a, int b) {
  }
  /* copia stringa senza controllo intenzionale (per rilevare vulnerability) */
  strcpy(buf, "This is a test string used for static analysis");
- (void)buf; /* evita warning
+ (void)buf; /* evita warnin
