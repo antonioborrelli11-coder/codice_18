@@ -1,32 +1,137 @@
-name: SonarCloud Analysis Debug
+# .github/workflows/sonar.yml - Fix per SonarCloud
+name: SonarCloud Analysis
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, master ]
   pull_request:
+    branches: [ main, master ]
 
 jobs:
   sonarcloud:
-    name: SonarCloud Scan
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Importante per SonarCloud
+    
+    - name: Install build-wrapper
+      run: |
+        wget https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+        unzip build-wrapper-linux-x86.zip
+        echo "$PWD/build-wrapper-linux-x86" >> $GITHUB_PATH
+    
+    - name: Clean and prepare
+      run: |
+        rm -rf build/ bw-output/
+        mkdir -p build bw-output
+    
+    - name: Build with wrapper
+      run: |
+        build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+        # oppure se hai un Makefile diverso:
+        # build-wrapper-linux-x86-64 --out-dir bw-output gcc -o build/program *.c
+    
+    - name: Verify build output
+      run: |
+        echo "=== Build Wrapper Output ==="
+        ls -la bw-output/
+        echo "=== Compile Commands ==="
+        cat bw-output/compile_commands.json || echo "File non trovato"
+        echo "=== Source Files ==="
+        find . -name "*.c" -o -name "*.cpp" -o -name "*.h"
+    
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.projectKey=antonioborrelli11-coder_mergesort
+          -Dsonar.organization=antonioborrelli11-coder
+          -Dsonar.sources=.
+          -Dsonar.exclusions=**/build-wrapper-dump.json,**/bw-output/**
+          -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
+          -Dsonar.cfamily.cache.enabled=false
+          -Dsonar.cfamily.threads=4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
+---
+# sonar-project.properties - Alternativo
+sonar.projectKey=antonioborrelli11-coder_mergesort
+sonar.organization=antonioborrelli11-coder
 
-      - name: Build project
-        run: cmake --build .  # sostituisci con il comando reale per compilare il tuo progetto
+# Paths
+sonar.sources=.
+sonar.exclusions=**/build-wrapper-dump.json,**/bw-output/**,**/.git/**
 
-      - name: Run SonarCloud Scan (debug)
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          args: -X -Dsonar.projectKey=antonioborrelli11-coder_codice_18 -Dsonar.organization=antonioborrelli11-coder
-          projectBaseDir: .
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+# C/C++ specific
+sonar.cfamily.compile-commands=bw-output/compile_commands.json
+sonar.cfamily.cache.enabled=false
+sonar.cfamily.threads=4
+
+# Language settings
+sonar.c.file.suffixes=.c,.h
+sonar.cpp.file.suffixes=.cpp,.cc,.cxx,.c++,.hh,.hpp,.hxx,.h++
+
+---
+# Makefile fix
+.PHONY: clean all build
+
+CC=gcc
+CFLAGS=-std=c11 -Wall -Wextra -O2
+TARGET=build/program
+SOURCES=$(wildcard *.c)
+OBJECTS=$(SOURCES:.c=.o)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS) | build
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+build:
+	mkdir -p build
+
+clean:
+	rm -rf build/ *.o bw-output/
+
+# Test build senza wrapper
+test-build:
+	gcc -std=c11 -Wall -Wextra -O2 -o test_program *.c
+
+---
+# Script di debug - debug_sonar.sh
+#!/bin/bash
+echo "=== SONAR DEBUG SCRIPT ==="
+
+echo "1. Verifica file sorgenti:"
+find . -name "*.c" -o -name "*.cpp" -o -name "*.h" | head -10
+
+echo "2. Verifica Compilation Database:"
+if [ -f "bw-output/compile_commands.json" ]; then
+    echo "File trovato, contenuto:"
+    cat bw-output/compile_commands.json
+else
+    echo "❌ compile_commands.json NON TROVATO"
+fi
+
+echo "3. Verifica percorsi assoluti:"
+pwd
+ls -la
+
+echo "4. Test build manuale:"
+gcc -v -o test_program *.c 2>&1 | grep -E "(collect2|ld|gcc)"
+
+echo "5. Verifica build wrapper:"
+if [ -f "bw-output/build-wrapper-dump.json" ]; then
+    echo "Build wrapper dump trovato"
+    head -20 bw-output/build-wrapper-dump.json
+else
+    echo "❌ Build wrapper dump non trovato"
+fi
+
+# Esegui con: chmod +x debug_sonar.sh && ./debug_sonar.sh
