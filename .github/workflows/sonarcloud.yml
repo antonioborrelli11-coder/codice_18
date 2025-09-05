@@ -1,41 +1,32 @@
-name: SonarCloud
+name: SonarCloud Analysis Debug
 
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
-  build:
-    name: Build and analyze
+  sonarcloud:
+    name: SonarCloud Scan
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up CMake
-        uses: jwlawson/actions-setup-cmake@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          cmake-version: '3.27.3'  # scegli la versione corretta per il tuo progetto
+          distribution: temurin
+          java-version: 17
 
-      - name: Create build directory
-        run: mkdir -p build
+      - name: Build project
+        run: cmake --build .  # sostituisci con il comando reale per compilare il tuo progetto
 
-      - name: Build project with Build Wrapper
-        run: |
-          mkdir -p bw-output
-          tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build
-
-      - name: Run SonarCloud analysis
+      - name: Run SonarCloud Scan (debug)
         uses: SonarSource/sonarcloud-github-action@v2
         with:
-          args: >
-            -Dsonar.projectKey=antonioborrelli11-coder_codice_18
-            -Dsonar.organization=antonioborrelli11-coder
-            -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
+          args: -X -Dsonar.projectKey=antonioborrelli11-coder_codice_18 -Dsonar.organization=antonioborrelli11-coder
           projectBaseDir: .
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
