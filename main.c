@@ -8,7 +8,7 @@
 
 /* ===== COMMENT BLOCK 1 ===== */
 /* Questo blocco serve a generare righe di commento */
-/* ripetizione 1.0 - Sonar test */
+/* ripetizione 1.0 - Sonar test x */
 /* ripetizione 1.1 - Sonar test */
 /* ripetizione 1.2 - Sonar test */
 
