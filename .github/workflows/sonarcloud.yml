@@ -1,49 +1,50 @@
-name: SonarCloud Analysis (C/C++ optimized)
+name: SonarCloud Scan
 
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 jobs:
   sonarcloud:
-    name: SonarCloud
+    name: SonarCloud Analysis
     runs-on: ubuntu-latest
 
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: '17'
           distribution: temurin
 
-      - name: Install dependencies (bear for compilation database)
+      - name: Download and setup Build Wrapper
         run: |
-          sudo apt-get update
-          sudo apt-get install -y bear build-essential
+          wget https://binaries.sonarsource.com/BuildWrapper/build-wrapper-linux-x86.zip -O build-wrapper.zip
+          unzip build-wrapper.zip
+          chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86
+        shell: bash
 
-      - name: Build project with Bear to generate compilation database
+      - name: Build project with Build Wrapper
         run: |
-          mkdir -p bw-outputs
-          bear -- make
+          ./build-wrapper-linux-x86/build-wrapper-linux-x86 --out-dir bw-output make clean all
+        shell: bash
 
-      - name: Download SonarCloud Build Wrapper (optional, only if needed)
-        run: |
-          curl -L -o build-wrapper-linux-x86.zip https://binaries.sonarsource.com/BuildWrapper/build-wrapper-linux-x86.zip || true
-          unzip -o build-wrapper-linux-x86.zip || true
-          chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86 || true
-
-      - name: Run SonarCloud Scan
+      - name: Run SonarCloud Analysis
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
             -Dsonar.projectKey=antonioborrelli11-coder_codice_18
             -Dsonar.organization=antonioborrelli11-coder
-            -Dsonar.cfamily.compile-commands=compile_commands.json
+            -Dsonar.cfamily.build-wrapper-output=bw-output
+            -Dsonar.sources=.
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
