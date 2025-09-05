@@ -530,7 +530,7 @@ int test_func_12(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy2(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -990,7 +990,7 @@ int test_func_23(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy3(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -1450,7 +1450,7 @@ int test_func_34(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy4(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -1910,7 +1910,7 @@ int test_func_45(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy5(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -2400,7 +2400,7 @@ void dup_block_12_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy6(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -2860,7 +2860,7 @@ int test_func_67(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy7(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -3320,7 +3320,7 @@ int test_func_78(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy8(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -3780,7 +3780,7 @@ int test_func_89(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy9(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -4240,7 +4240,7 @@ int test_func_100(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy10(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -4730,7 +4730,7 @@ void dup_block_23_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy11(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -5190,7 +5190,7 @@ int test_func_122(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy12(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -5650,7 +5650,7 @@ int test_func_133(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy13(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -6110,7 +6110,7 @@ int test_func_144(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy14(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -6570,7 +6570,7 @@ int test_func_155(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy15(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -7060,7 +7060,7 @@ void dup_block_34_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy16(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -7520,7 +7520,7 @@ int test_func_177(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy17(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -7980,7 +7980,7 @@ int test_func_188(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy18(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -8440,7 +8440,7 @@ int test_func_199(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy19(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -8900,7 +8900,7 @@ int test_func_210(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy20(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -9390,7 +9390,7 @@ void dup_block_45_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy21(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -9850,7 +9850,7 @@ int test_func_232(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy22(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -10310,7 +10310,7 @@ int test_func_243(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy23(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -10770,7 +10770,7 @@ int test_func_254(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy24(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -11230,7 +11230,7 @@ int test_func_265(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy25(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -11720,7 +11720,7 @@ void dup_block_56_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy26(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -12180,7 +12180,7 @@ int test_func_287(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy27(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -12640,7 +12640,7 @@ int test_func_298(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy28(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -13100,7 +13100,7 @@ int test_func_309(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy29(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -13560,7 +13560,7 @@ int test_func_320(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy30(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -14050,7 +14050,7 @@ void dup_block_67_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy31(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -14510,7 +14510,7 @@ int test_func_342(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy32(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -14970,7 +14970,7 @@ int test_func_353(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy33(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -15430,7 +15430,7 @@ int test_func_364(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy34(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -15890,7 +15890,7 @@ int test_func_375(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy35(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -16380,7 +16380,7 @@ void dup_block_78_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy36(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -16840,7 +16840,7 @@ int test_func_397(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy37(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -17300,7 +17300,7 @@ int test_func_408(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy38(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -17760,7 +17760,7 @@ int test_func_419(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy39(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -18220,7 +18220,7 @@ int test_func_430(int a, int b) {
  return result;
 }
 
-int switchy(int v) {
+int switchy40(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -18710,7 +18710,7 @@ void dup_block_89_2(void) {
  }
 }
 
-int switchy(int v) {
+int switchy41(int v) {
  switch(v) {
  case 0: return 0;
  case 1: return 7;
@@ -18889,4 +18889,4 @@ int test_func_446(int a, int b) {
  }
  /* copia stringa senza controllo intenzionale (per rilevare vulnerability) */
  strcpy(buf, "This is a test string used for static analysis");
- (void)buf; /* evita warnin
+ (void)buf; /* evita warni
