@@ -1,15 +1,3 @@
-# ❌ CONFIGURAZIONE ATTUALE (SBAGLIATA)
-- uses: SonarSource/sonarcloud-github-action@v2
-  with:
-    args: >
-      -Dsonar.projectKey=antonioborrelli11-coder_codice_18 
-      -Dsonar.organization=antonioborrelli11-coder
-    projectBaseDir: .
-  env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
----
-
 # ✅ CONFIGURAZIONE CORRETTA (AGGIUNGERE)
 - uses: SonarSource/sonarcloud-github-action@v2
   with:
