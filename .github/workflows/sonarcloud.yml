@@ -1,48 +1,36 @@
-name: SonarCloud C/C++ Analysis
+name: SonarCloud Analysis
 
 on:
   push:
     branches:
       - main
   pull_request:
-    branches:
-      - main
 
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
-
-      # 1️⃣ Checkout del codice
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup Java (necessario per SonarScanner)
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
+          java-version: '17'
           distribution: temurin
-          java-version: 17
 
-      # 3️⃣ Scarica Build Wrapper da SonarSource
-      - name: Download Build Wrapper
-        run: |
-          wget https://binaries.sonarsource.com/BuildWrapper/build-wrapper-linux-x86.zip
-          unzip build-wrapper-linux-x86.zip
-          chmod +x build-wrapper-linux-x86/build-wrapper-linux-x86
-
-      # 4️⃣ Esegui il build con Build Wrapper
       - name: Build project with Build Wrapper
         run: |
-          ./build-wrapper-linux-x86/build-wrapper-linux-x86 --out-dir bw-output make clean all
-
-      # 5️⃣ Esegui SonarCloud Scanner
-      - name: Run SonarCloud Analysis
+          chmod +x tools/build-wrapper/build-wrapper-linux-x86-64
+          tools/build-wrapper/build-wrapper-linux-x86-64 --out-dir bw-output make clean all
+          
+      - name: Run SonarCloud analysis
         uses: SonarSource/sonarcloud-github-action@v2
         with:
           args: >
             -Dsonar.projectKey=antonioborrelli11-coder_codice_18
             -Dsonar.organization=antonioborrelli11-coder
-            -Dsonar.cfamily.build-wrapper-output=bw-output
+            -Dsonar.cfamily.compile-commands=bw-output/compile_commands.json
+          projectBaseDir: .
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
