@@ -1,0 +1,36 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Build project with Build Wrapper
+      run: |
+        mkdir -p build_wrapper_output
+        # il build-wrapper integrato si occuperà della compilazione
+        build-wrapper-linux-x86-64 --out-dir build_wrapper_output make build
+
+    - name: Run SonarCloud analysis
+      uses: SonarSource/sonarqube-scan-action@v4
+      with:
+        args: >
+          -Dsonar.projectKey=antonioborrelli11-coder_codice_18
+          -Dsonar.organization=antonioborrelli11-coder
+          -Dsonar.sources=.
+          -Dsonar.cfamily.build-wrapper-output=build_wrapper_output
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
