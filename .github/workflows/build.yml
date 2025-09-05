@@ -25,5 +25,5 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
-          -Dsonar.projectKey=<PROJECT_KEY>
-          -Dsonar.organization=<ORG_KEY>
+          -Dsonar.projectKey=<antonioborrelli11-coder_codice_18>
+          -Dsonar.organization=<antonioborrelli11-coder>
